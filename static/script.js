@@ -4,6 +4,12 @@ function stuDirect() {
     console.log("Redirecting...");
     window.location.href = "/stulogin";
 }
+
+function failed() {
+    console.log("Redirecting...");
+    window.location.href = "/failed";
+}
+
 function staffLogin() {
     console.log("Redirecting...");
     window.location.href = "/stafflog";

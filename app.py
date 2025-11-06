@@ -29,7 +29,7 @@ def staff_login():
             session['staff_email'] = staff_user['email'] # Store staff email in session
             return redirect(url_for('stadash')) # Redirect to staff dashboard
         else:
-            return "Staff Login Failed"
+            return redirect(url_for('failed')) # Redirect to failed login page
     return render_template('stafflog.html')
 
 @app.route('/stulogin', methods=['GET', 'POST'])
@@ -55,7 +55,7 @@ def stulog():
             session['email'] = user['email'] # Save email in session
             return redirect(url_for('studash'))
         else:
-            return "Student Login Failed"
+            return redirect(url_for('failed')) # Redirect to failed login page
 
     return render_template('stuLogin.html')
 @app.route('/studash', methods=['GET', 'POST'])
@@ -157,7 +157,7 @@ def clear_completed():
     conn.commit()
     conn.close()
     
-    flash("All completed requests have been cleared.", 'success') # <-- ADD THIS
+    flash("All completed requests have been cleared.", 'success')
     
     # Send the staff member back to the dashboard
     return redirect(url_for('stadash'))
@@ -165,6 +165,10 @@ def clear_completed():
 @app.route('/staffdash2')
 def stdash2():
     return render_template('staffdash2.html')
+
+@app.route('/failed')
+def failed():
+    return render_template('failed.html')
 
 @app.route('/api/students')
 def get_students():
