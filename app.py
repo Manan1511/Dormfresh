@@ -7,12 +7,12 @@ app.secret_key = 'your_secret_key_goes_here'
 
 @app.route('/')
 def home():
-    return render_template('selection.html') # Assuming this is your selection page filename
+    return render_template('selection.html') 
 
 @app.route('/stafflog', methods=['GET', 'POST'])
 def staff_login():
     if request.method == 'POST':
-        # Your staff login logic here (e.g., check against staff_users table)
+        
         email = request.form['email']
         password = request.form['password']
         
@@ -20,16 +20,16 @@ def staff_login():
         conn.row_factory = sqlite3.Row
         c = conn.cursor()
         
-        # Assuming you have a 'staff_users' table for staff login
+        
         c.execute("SELECT * FROM staff WHERE email = ? AND staff_id = ?", (email, password))
         staff_user = c.fetchone()
         conn.close()
         
         if staff_user:
-            session['staff_email'] = staff_user['email'] # Store staff email in session
-            return redirect(url_for('stadash')) # Redirect to staff dashboard
+            session['staff_email'] = staff_user['email'] 
+            return redirect(url_for('stadash'))
         else:
-            return redirect(url_for('failed')) # Redirect to failed login page
+            return redirect(url_for('failed')) 
     return render_template('stafflog.html')
 
 @app.route('/stulogin', methods=['GET', 'POST'])
@@ -46,16 +46,16 @@ def stulog():
         conn.row_factory = sqlite3.Row
         c = conn.cursor()
 
-        # This assumes your student table is 'users' and has a 'password' column
+       
         c.execute("SELECT * FROM Students WHERE email = ? AND student_id = ?", (email, password))
         user = c.fetchone()
         conn.close()
 
         if user:
-            session['email'] = user['email'] # Save email in session
+            session['email'] = user['email'] 
             return redirect(url_for('studash'))
         else:
-            return redirect(url_for('failed')) # Redirect to failed login page
+            return redirect(url_for('failed')) 
 
     return render_template('stuLogin.html')
 @app.route('/studash', methods=['GET', 'POST'])
@@ -68,7 +68,7 @@ def studash():
     if request.method == 'POST':
         room = request.form['form_room_name'] 
         issue = request.form['form_issue_name']
-        priority = request.form['form_priority'] # <-- 1. GET THE NEW DATA
+        priority = request.form['form_priority']
         
         now = datetime.datetime.now()
         current_time = now.strftime("%Y-%m-%d %H:%M") 
@@ -76,15 +76,14 @@ def studash():
         conn = sqlite3.connect('DORM_FRESH')
         c = conn.cursor()
         
-        # 2. UPDATE THE SQL COMMAND (added 'priority', added one '?')
         c.execute("INSERT INTO requests (room, issue, status, email, time, priority) VALUES (?, ?, ?, ?, ?, ?)", 
-                  (room, issue, 'Pending', student_email, current_time, priority)) # <-- 3. ADD THE VARIABLE
+                  (room, issue, 'Pending', student_email, current_time, priority))
         
         conn.commit()
         conn.close()
        
         
-        flash("Your cleaning request has been submitted successfully!", 'success') # <-- ADD THIS
+        flash("Your cleaning request has been submitted successfully!", 'success') 
         
         return redirect(url_for('studash'))
 
@@ -113,7 +112,6 @@ def stadash():
             high_priority_count += 1
 
     # Get count for "Completed Today" card
-    # (This counts all completed, you can add date logic later)
     c.execute("SELECT COUNT(*) FROM requests WHERE status = 'Completed'")
     completed_count = c.fetchone()[0]
 
@@ -121,7 +119,7 @@ def stadash():
 
     return render_template(
         'staffdash2.html', 
-        data=pending_requests_list, # Send only pending requests
+        data=pending_requests_list,
         total_requests=pending_count,
         high_priority_requests=high_priority_count,
         completed_today=completed_count 
@@ -159,7 +157,6 @@ def clear_completed():
     
     flash("All completed requests have been cleared.", 'success')
     
-    # Send the staff member back to the dashboard
     return redirect(url_for('stadash'))
 
 @app.route('/staffdash2')
